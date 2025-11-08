@@ -5,8 +5,12 @@
 ### `marker_detection`
 - Transforms an angled view to a birds eye view
 - Extracts ID and pose from ArUco markers
+- `pip install opencv-contrib-python`
+- Calibration done by the [camera_calibration library](https://github.com/abhishekpadalkar/camera_calibration)
 
 ### `command_transmission`
+- Facilitates UDP transmission between a laptop hot spot and each MCU
+- 💡 An example is currently provided in the program source code
 
 ### `multi_trajectory_planner`
 
@@ -24,3 +28,5 @@
 ## Optimizations
 Several optimizations could be made to benefit the performance of the system. Some of these optimizations include:
 - Rewriting Python programs in C++
+- Regenerate a global plan at set intervals
+- Calibrate with charuco markers
