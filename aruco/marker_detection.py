@@ -15,6 +15,7 @@ class ArucoMarkers():
         self.aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
         self.parameters = aruco.DetectorParameters()
         self.detector = aruco.ArucoDetector(self.aruco_dict, self.parameters)
+        self.marker_length = 0.05  # The actual length of each marker, in meters
         
         # Define the calibration intrinsics
         # TODO
@@ -44,6 +45,26 @@ class ArucoMarkers():
             cv2.destroyAllWindows()
 
 
+    def calculate_yaw(self, rotation):
+        # Convert the rotation vector into a 3x3 matrix
+        rmat, _ = cv2.Rodrigues(rotation)
+        sy = np.sqrt(rmat[0,0]**2 + rmat[1,0]**2)
+        singular = sy < 1e-6
+        
+        # Z-Y-X decomposition
+        if not singular:
+            x_angle = np.arctan2(rmat[2,1], rmat[2,2])
+            y_angle = np.arctan2(-rmat[2,0], sy)
+            z_angle = np.arctan2(rmat[1,0], rmat[0,0])
+        else:
+            x_angle = np.arctan2(-rmat[1,2], rmat[1,1])
+            y_angle = np.arctan2(-rmat[2,0], sy)
+            z_angle = 0
+        
+        yaw = np.degrees(z_angle)
+        return yaw
+
+
     def detect_markers(self):
         ret, frame = self.cap.read()
         if not ret: return
@@ -56,38 +77,51 @@ class ArucoMarkers():
             # Draw the detected markers
             aruco.drawDetectedMarkers(frame, corners, ids)
 
+            # TODO: Calibrate camera
+            camera_matrix = np.array([[600, 0, 320],
+                          [0, 600, 240],
+                          [0, 0, 1]], dtype=np.float32)
+            dist_coeffs = np.zeros((5,1))
+
             # Estimate pose for each detected marker
             rotation_vectors, translation_vectors, _ = aruco.estimatePoseSingleMarkers(
                 corners, 
-                marker_length, 
+                self.marker_length, 
                 camera_matrix, 
                 dist_coeffs
             )
 
             for i, marker_id in enumerate(ids.flatten()):
-                rvec, tvec = rotation_vectors[i], translation_vectors[i]
+                rotation = rotation_vectors[i]
+                translation = translation_vectors[i]
 
-                # Draw the coordinate axes on each marker
-                aruco.drawAxis(frame, camera_matrix, dist_coeffs, rvec, tvec, 0.03)
+                # Draw the coordinate axes on each marker in the frame
+                cv2.drawFrameAxes(
+                    frame, 
+                    camera_matrix, 
+                    dist_coeffs, 
+                    rotation, 
+                    translation, 
+                    0.03
+                )
 
-                # Extract position
-                x, y, z = tvec[0]
-                # Extract yaw (rotation around z-axis)
-                rotation_matrix, _ = cv2.Rodrigues(rvec)
-                yaw = np.degrees(np.arctan2(rotation_matrix[1, 0], rotation_matrix[0, 0]))
+                # Extract the pose
+                x, y, z = translation[0]
+                yaw = self.calculate_yaw(rotation)
 
+                # Print and store the pose
                 print(f"Marker ID: {marker_id} | X: {x:.3f}m | Y: {y:.3f}m | Z: {z:.3f}m | Yaw: {yaw:.1f}°")
-                self.marker_dict[id] = {"x": x, "y": y, "yaw": yaw}
+                self.marker_dict[marker_id] = {"x": x, "y": y, "yaw": yaw}
         
-        # cv2.imshow("ArUco Detection", frame)
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #     return
+        # Debug
+        cv2.imshow("ArUco Detection", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            return
 
     
     def shutdown(self):
         self.cap.release()
         cv2.destroyAllWindows
-
 
 
 
