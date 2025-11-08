@@ -6,7 +6,7 @@ import numpy as np
 class ArucoMarkers():
     def __init__(self):
         # Initialize the webcam
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(2)
         if not self.cap.isOpened():
             print("Error: Could not open webcam.")
             return
@@ -18,7 +18,19 @@ class ArucoMarkers():
         self.marker_length = 0.05  # The actual length of each marker, in meters
         
         # Define the calibration intrinsics
-        # TODO
+        self.camera_matrix = np.array([
+            [785.4211781621483, 0.0, 318.05277676515107],
+            [0.0, 784.137732741561, 240.83254986145354],
+            [0.0, 0.0, 1.0]
+        ], dtype=np.float32)
+        
+        self.dist_coeffs = np.array([
+            -0.7874504210687944,
+            7.18045442894109,
+            0.03732237657226428,
+            -0.013297080410922117,
+            -36.37566733804244
+        ])
 
         # id: {"x": x, "y": y, "yaw": yaw}
         self.marker_dict = {}
@@ -76,19 +88,13 @@ class ArucoMarkers():
         if ids is not None:
             # Draw the detected markers
             aruco.drawDetectedMarkers(frame, corners, ids)
-
-            # TODO: Calibrate camera
-            camera_matrix = np.array([[600, 0, 320],
-                          [0, 600, 240],
-                          [0, 0, 1]], dtype=np.float32)
-            dist_coeffs = np.zeros((5,1))
-
+            
             # Estimate pose for each detected marker
             rotation_vectors, translation_vectors, _ = aruco.estimatePoseSingleMarkers(
                 corners, 
                 self.marker_length, 
-                camera_matrix, 
-                dist_coeffs
+                self.camera_matrix, 
+                self.dist_coeffs
             )
 
             for i, marker_id in enumerate(ids.flatten()):
@@ -98,8 +104,8 @@ class ArucoMarkers():
                 # Draw the coordinate axes on each marker in the frame
                 cv2.drawFrameAxes(
                     frame, 
-                    camera_matrix, 
-                    dist_coeffs, 
+                    self.camera_matrix, 
+                    self.dist_coeffs, 
                     rotation, 
                     translation, 
                     0.03
@@ -134,7 +140,7 @@ if __name__=="__main__":
     marker_obj.generate_markers(marker_ids)
 
     # Detect markers
-    for i in range(100):
+    while True:
         marker_obj.detect_markers()
 
     # Shut everything down

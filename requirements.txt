@@ -1,2 +1,4 @@
 opencv_contrib_python
 numpy
+pyyaml
+tqdm
