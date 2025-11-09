@@ -32,16 +32,19 @@ class ArucoMarkers():
             -36.37566733804244
         ])
 
+        # The allows ids. One for each robot.
+        self.marker_ids = {1, 2, 3}
+
         # id: {"x": x, "y": y, "yaw": yaw}
         self.marker_dict = {}
 
 
-    def generate_markers(self, marker_ids: set) -> None:
+    def generate_markers(self) -> None:
 
         # Choose a dictionary (e.g., 4x4 markers with 50 unique IDs)
         marker_size = 200  # In pixels
         
-        for id in marker_ids:
+        for id in self.marker_ids:
             if id not in range(0,50):
                 print(f"The marker {id} was not in the allowed range of [0,50)")
                 continue
@@ -83,6 +86,8 @@ class ArucoMarkers():
 
         # Detect all markers in the scene
         corners, ids, rejected = self.detector.detectMarkers(frame)
+
+        # FIXME Filter out detected ids to only match the ids we've assigned each robot.
         
         # Extract the pose of each marker
         if ids is not None:
@@ -136,8 +141,7 @@ if __name__=="__main__":
     marker_obj = ArucoMarkers()
     
     # Generate markers
-    marker_ids = {1, 2, 3}
-    marker_obj.generate_markers(marker_ids)
+    # marker_obj.generate_markers()
 
     # Detect markers
     while True:
