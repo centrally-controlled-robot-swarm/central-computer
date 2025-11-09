@@ -1,4 +1,5 @@
 import socket
+import time
 
 # Used to broadcast messages to all esp32s
 # sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -7,7 +8,7 @@ class CommandTransmission():
     def __init__(self):
         # Storing the IP addresses in a dict so that addressing is in constant time
         self.esp_id = {
-            1: "192.168.43.123",
+            1: "10.42.0.50",
             2: "192.168.43.123",
             3: "192.168.43.123"
         }
@@ -25,7 +26,10 @@ class CommandTransmission():
 if __name__=="__main__":
     data_obj = CommandTransmission()
     
-    for i in range(10):
-        data_obj.send_command(str(i), 1)
+    while True:
+        message  = input()
+        data_obj.send_command(1, message)
+        print(f"Sending: {message}")
+        time.sleep(1)
 
 # TODO: Add ROS2 hooks so that this can interact with the local planner
