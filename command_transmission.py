@@ -9,8 +9,8 @@ class CommandTransmission():
         # Storing the IP addresses in a dict so that addressing is in constant time
         self.esp_id = {
             1: "10.42.0.50",
-            2: "192.168.43.123",
-            3: "192.168.43.123"
+            2: "10.42.0.40",
+            3: "10.42.0.30"
         }
         self.ESP32_PORT = 4210
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,15 +21,21 @@ class CommandTransmission():
         ip_address = self.esp_id[id]
         self.sock.sendto(message.encode('utf-8'), (ip_address, self.ESP32_PORT))
 
+        # Echo back messages received
+        try:
+            data, addr = self.sock.recvfrom(1024)
+            print(f"Echo from {addr}: {data.decode()}")
+        except socket.timeout:
+            print("No echo received.")
 
 
 if __name__=="__main__":
     data_obj = CommandTransmission()
     
     while True:
-        message  = input()
-        data_obj.send_command(1, message)
-        print(f"Sending: {message}")
+        message = input("Type the string you would like to send: ")
+        for i in range(1, 4):
+            data_obj.send_command(i, message)
         time.sleep(1)
 
 # TODO: Add ROS2 hooks so that this can interact with the local planner
