@@ -37,5 +37,3 @@ if __name__=="__main__":
         for i in range(1, 4):
             data_obj.send_command(i, message)
         time.sleep(1)
-
-# TODO: Add ROS2 hooks so that this can interact with the local planner

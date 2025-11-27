@@ -2,7 +2,7 @@ import cv2
 import cv2.aruco as aruco
 import numpy as np
 
-
+# TODO: add the calibration as a function in this class
 class ArucoMarkers():
     def __init__(self):
         # Initialize the webcam
