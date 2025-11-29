@@ -17,9 +17,8 @@ class CommandTransmission():
         
 
 
-    def send_pwm(self, id, pwm_L: int, pwm_R: int):
+    def send_command(self, id, message):
         ip_address = self.esp_id[id]
-        message = f"{pwm_L}, {pwm_R}"
         self.sock.sendto(message.encode('utf-8'), (ip_address, self.ESP32_PORT))
 
         # Echo back messages received
@@ -30,21 +29,11 @@ class CommandTransmission():
             print("No echo received.")
 
 
-    def send_halt(self):
-        for robot in range(1, 4):
-            self.send_pwm(robot, -1, -1)
-
-
-
 if __name__=="__main__":
     data_obj = CommandTransmission()
     
     while True:
-        command = input("Do you want to send PWM or halt? (p, h): ")
-        if command.lower() == 'p':
-            pwm_L, pwm_R = input("Enter L and R PWM, separated by a space: ").split()
-            for i in range(1, 4):
-                data_obj.send_pwm(i, int(pwm_L), int(pwm_R))
-            time.sleep(1)
-        if command.lower() == 'h':
-            data_obj.send_halt()
+        message = input("Type the string you would like to send: ")
+        for i in range(1, 4):
+            data_obj.send_command(i, message)
+        time.sleep(1)

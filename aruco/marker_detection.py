@@ -6,7 +6,7 @@ import numpy as np
 class ArucoMarkers():
     def __init__(self):
         # Initialize the webcam
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(2)
         if not self.cap.isOpened():
             print("Error: Could not open webcam.")
             return
