@@ -2,7 +2,7 @@ from math import cos, sin, radians, degrees, atan2, sqrt
 import numpy as np
 import matplotlib.pyplot as plt
 
-def heading_error(curr_pos,goal_pos, heading):
+def heading_error(curr_pos, goal_pos, heading):
     curr_pos_x, curr_pos_y = curr_pos
     goal_pos_x, goal_pos_y = goal_pos
     

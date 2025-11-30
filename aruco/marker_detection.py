@@ -4,18 +4,19 @@ import numpy as np
 
 # TODO: add the calibration as a function in this class
 class ArucoMarkers():
-    def __init__(self):
-        # Initialize the webcam
-        self.cap = cv2.VideoCapture(2)
-        if not self.cap.isOpened():
-            print("Error: Could not open webcam.")
-            return
+    def __init__(self, ran_from_main_program=1):
+        if not ran_from_main_program:
+            # Initialize the webcam 
+            self.cap = cv2.VideoCapture(2)
+            if not self.cap.isOpened():
+                print("Error: Could not open webcam.")
+                return
         
         # Initialize ArUco detection parameters
         self.aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
         self.parameters = aruco.DetectorParameters()
         self.detector = aruco.ArucoDetector(self.aruco_dict, self.parameters)
-        self.marker_length = 0.05  # The actual length of each marker, in meters
+        self.marker_length = 0.127  # The actual length of each marker, in meters (5 inches = 0.127 meters)
         
         # Define the calibration intrinsics
         # self.camera_matrix = np.array([
@@ -94,14 +95,12 @@ class ArucoMarkers():
         return yaw
 
 
-    def detect_markers(self):
+    def detect_markers(self, robots):
         ret, frame = self.cap.read()
         if not ret: return
 
         # Detect all markers in the scene
         corners, ids, rejected = self.detector.detectMarkers(frame)
-
-        # FIXME Filter out detected ids to only match the ids we've assigned each robot.
         
         # Extract the pose of each marker
         if ids is not None:
@@ -135,18 +134,25 @@ class ArucoMarkers():
                 yaw = self.calculate_yaw(rotation)
 
                 # Print and store the pose
-                print(f"Marker ID: {marker_id} | X: {x:.3f}m | Y: {y:.3f}m | Z: {z:.3f}m | Yaw: {yaw:.1f}°")
-                self.marker_dict[marker_id] = {"x": x, "y": y, "yaw": yaw}
+                # print(f"Marker ID: {marker_id} | X: {x:.3f}m | Y: {y:.3f}m | Z: {z:.3f}m | Yaw: {yaw:.1f}°")
+                # self.marker_dict[marker_id] = {"x": x, "y": y, "yaw": yaw}
+                # return self.marker_dict
+            
+                robots[i].x = x
+                robots[i].y = y
+                robots[i].heading = yaw
+            
+
         
         # Debug
-        cv2.imshow("ArUco Detection", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            return
+        # cv2.imshow("ArUco Detection", frame)
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     return
 
     
-    def shutdown(self):
-        self.cap.release()
-        cv2.destroyAllWindows
+    # def shutdown(self):
+    #     self.cap.release()
+    #     cv2.destroyAllWindows
 
 
 
@@ -162,4 +168,4 @@ if __name__=="__main__":
         marker_obj.detect_markers()
 
     # Shut everything down
-    marker_obj.shutdown()
+    # marker_obj.shutdown()
