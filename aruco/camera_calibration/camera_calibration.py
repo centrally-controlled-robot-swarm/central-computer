@@ -23,10 +23,10 @@ calib_imgs_path = root.joinpath("aruco_data")
 aruco_dict = aruco.getPredefinedDictionary( aruco.DICT_6X6_1000 )
 
 #Provide length of the marker's side
-markerLength = 3.75  # Here, measurement unit is centimetre.
+markerLength = 2.9 # 3.75  # Here, measurement unit is centimetre.
 
 # Provide separation between markers
-markerSeparation = 0.4   # Here, measurement unit is centimetre.
+markerSeparation = 0.35 # 0.4   # Here, measurement unit is centimetre.
 
 # create arUco board
 board = aruco.GridBoard((4, 5), markerLength, markerSeparation, aruco_dict)
