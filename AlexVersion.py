@@ -1,5 +1,4 @@
 import cv2
-import pyautogui
 import numpy as np
 from aruco.marker_detection import ArucoMarkers
 
@@ -10,6 +9,15 @@ class Robot:
         self.y = 0
         self.heading = 0
         self.name = name
+        self.detected = False
+
+# Global mouse position relative to OpenCV window
+mouse_pos = [0, 0]
+
+def mouse_callback(event, x, y, flags, param):
+    if event == cv2.EVENT_MOUSEMOVE:
+        mouse_pos[0] = x
+        mouse_pos[1] = y
 
 def main():
     # Initialize ArUco detector
@@ -22,8 +30,8 @@ def main():
 
     # Create robots
     robot1 = Robot("Robot1")  # Marker ID 1
-    robot2 = Robot("Robot2")  # Marker ID 2 (optional)
-    robot3 = Robot("Robot3")  # Marker ID 3 (optional)
+    robot2 = Robot("Robot2")  # Marker ID 2
+    robot3 = Robot("Robot3")  # Marker ID 3
 
     # Map marker IDs to robots
     marker_id_to_robot = {
@@ -31,6 +39,9 @@ def main():
         2: robot2,
         3: robot3
     }
+
+    cv2.namedWindow("ArUco + Mouse + Heading")
+    cv2.setMouseCallback("ArUco + Mouse + Heading", mouse_callback)
 
     while True:
         ret, frame = cap.read()
@@ -41,14 +52,13 @@ def main():
         # Detect all markers and update their robots
         marker_detector.detect_markers(marker_id_to_robot, frame)
 
-        # Get mouse position
-        mouse_x, mouse_y = pyautogui.position()
+        # Get mouse position relative to frame
+        mouse_x, mouse_y = mouse_pos[0], mouse_pos[1]
 
-        # Draw all robots
+        # Draw all robots that are currently detected
         for robot in marker_id_to_robot.values():
-            # Skip robots that weren't detected yet (x=0, y=0)
-            if robot.x == 0 and robot.y == 0:
-                continue
+            if not robot.detected:
+                continue  # skip robots not detected this frame
 
             # Draw marker center
             cv2.circle(frame, (robot.x, robot.y), 8, (0, 0, 255), -1)
