@@ -171,16 +171,21 @@ class ArucoMarkers():
                 center_x = int(c[:, 0].mean())
                 center_y = int(c[:, 1].mean())
 
+                # Estimate heading from top-left to top-right
+                dx = c[1][0] - c[0][0]
+                dy = c[1][1] - c[0][1]
+                heading = np.degrees(np.arctan2(dy, dx))
+
                 # Save pixel coordinates
                 robots[i].x = center_x
                 robots[i].y = center_y
-                robots[i].heading = 0  # optional, heading not used in pixels
+                robots[i].heading = heading  # optional, heading not used in pixels
 
                 # Optional: draw the center
                 cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
 
                 # Store in marker_dict if needed
-                self.marker_dict[marker_id] = {"x": center_x, "y": center_y}
+                #self.marker_dict[marker_id] = {"x": center_x, "y": center_y, "heading": heading}
 
         # Optional: show the frame for debugging
         # cv2.imshow("ArUco Detection", frame)
