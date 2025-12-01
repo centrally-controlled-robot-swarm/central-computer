@@ -95,9 +95,9 @@ class ArucoMarkers():
         return yaw
 
 
-    def detect_markers(self, robots):
-        ret, frame = self.cap.read()
-        if not ret: return
+    def detect_markers(self, robots, frame):
+        # ret, frame = self.cap.read()
+        # if not ret: return
 
         # Detect all markers in the scene
         corners, ids, rejected = self.detector.detectMarkers(frame)

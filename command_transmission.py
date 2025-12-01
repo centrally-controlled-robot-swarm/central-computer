@@ -51,8 +51,16 @@ if __name__=="__main__":
 
     
     
-    while True:
-        pwm_L, pwm_R = input("Enter L and R PWM, separated by a space: ").split()
-        data_obj.send_pwm(2, int(pwm_L), int(pwm_R))
-        time.sleep(0.05)
+    # while True:
+        # pwm_L, pwm_R = input("Enter L and R PWM, separated by a space: ").split()
+        # data_obj.send_pwm(3, int(pwm_L), int(pwm_R))
+        # time.sleep(0.05)
+
+    data_obj.send_pwm(1, int(20), int(40))
+    data_obj.send_pwm(2, int(20), int(40))
+    data_obj.send_pwm(3, int(20), int(40))
+    time.sleep(3)   
+    data_obj.send_pwm(1, int(0), int(0))
+    data_obj.send_pwm(2, int(0), int(0))
+    data_obj.send_pwm(3, int(0), int(0))
 

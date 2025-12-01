@@ -18,15 +18,16 @@ from heading_error_detection import heading_error, distance_error
 
 class Robot():
     # TODO: Do I want to implement a FIFO buffer for the behind point?
-    x               = 0.0
-    y               = 0.0
-    heading         = 0.0
-    behind_point_x  = 0.0
-    behind_point_y  = 0.0
-    goal_point_x    = 0.0
-    goal_point_y    = 0.0
-    l_pwm           = 0
-    r_pwm           = 0
+    def __init__(self):
+        self.x               = 0.0
+        self.y               = 0.0
+        self.heading         = 0.0
+        self.behind_point_x  = 0.0
+        self.behind_point_y  = 0.0
+        self.goal_point_x    = 0.0
+        self.goal_point_y    = 0.0
+        self.l_pwm           = 0
+        self.r_pwm           = 0
 
 
 class MainProgram():
@@ -151,15 +152,11 @@ class MainProgram():
 
 
     def back_interpolate(self, offset_distance = 0.3):
-        robot_1_behind_x = self.robots[1].x - offset_distance * cos(radians(self.robots[1].heading))
-        robot_1_behind_y = self.robots[1].y - offset_distance * sin(radians(self.robots[1].heading))
-        self.robots[2].goal_point_x = robot_1_behind_x
-        self.robots[2].goal_point_y = robot_1_behind_y
+        self.robots[1].behind_point_x = self.robots[1].x - offset_distance * cos(radians(self.robots[1].heading))
+        self.robots[1].behind_point_y = self.robots[1].y - offset_distance * sin(radians(self.robots[1].heading))
 
-        robot_2_behind_x = self.robots[2].x - offset_distance * cos(radians(self.robots[2].heading))
-        robot_2_behind_y = self.robots[2].y - offset_distance * sin(radians(self.robots[2].heading))
-        self.robots[3].goal_point_x = robot_2_behind_x
-        self.robots[3].goal_point_y = robot_2_behind_y
+        self.robots[2].behind_point_x = self.robots[2].x - offset_distance * cos(radians(self.robots[2].heading))
+        self.robots[2].behind_point_y = self.robots[2].y - offset_distance * sin(radians(self.robots[2].heading))
 
 
     def compute_thread(self):
