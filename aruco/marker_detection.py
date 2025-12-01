@@ -154,7 +154,7 @@ class ArucoMarkers():
     #     self.cap.release()
     #     cv2.destroyAllWindows
 
-    def detect_markers(self, robots, frame):
+    def detect_markers(self, marker_id_to_robots, frame):
         """
         Detect ArUco markers and store their pixel centers in robots[i].x, robots[i].y.
         `robots` is a list of robot objects (each with .x, .y, .heading).
@@ -163,28 +163,29 @@ class ArucoMarkers():
         corners, ids, rejected = self.detector.detectMarkers(frame)
 
         if ids is not None:
-            # Draw detected markers
             aruco.drawDetectedMarkers(frame, corners, ids)
 
             for i, marker_id in enumerate(ids.flatten()):
-                c = corners[i][0]  # 4 corners (x, y)
+                # Skip markers we don't care about
+                if marker_id not in marker_id_to_robots:
+                    continue
+
+                robot = marker_id_to_robots[marker_id]
+
+                c = corners[i][0]  # 4 corners
                 center_x = int(c[:, 0].mean())
                 center_y = int(c[:, 1].mean())
 
-                # Estimate heading from top-left to top-right
+                # Heading from top-left to top-right
                 dx = c[1][0] - c[0][0]
                 dy = c[1][1] - c[0][1]
                 heading = np.degrees(np.arctan2(dy, dx))
 
-                # Save pixel coordinates
-                robots[i].x = center_x
-                robots[i].y = center_y
-                robots[i].heading = heading  # optional, heading not used in pixels
+                robot.x = center_x
+                robot.y = center_y
+                robot.heading = heading
 
-                # Optional: draw the center
                 cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
-
-                # Store in marker_dict if needed
                 #self.marker_dict[marker_id] = {"x": center_x, "y": center_y, "heading": heading}
 
         # Optional: show the frame for debugging
