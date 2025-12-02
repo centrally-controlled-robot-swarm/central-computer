@@ -1,6 +1,6 @@
 from math import cos, sin, radians, degrees, atan2, sqrt
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 def heading_error(curr_pos, goal_pos, heading):
     curr_pos_x, curr_pos_y = curr_pos
@@ -25,7 +25,7 @@ def heading_error(curr_pos, goal_pos, heading):
 
     angle = degrees(atan2(det, dot))
 
-    plot(curr_pos, goal_pos, heading)
+    #plot(curr_pos, goal_pos, heading)
     return angle
 
 
@@ -39,7 +39,7 @@ def distance_error(curr_pos, goal_pos):
     return sqrt(x_distance**2 + y_distance**2)
 
 
-def plot(curr_pos, goal_pos, heading, show=True):
+'''def plot(curr_pos, goal_pos, heading, show=True):
     """
     Plot heading vector (red) and goal vector (blue) from curr_pos.
     heading in degrees (0 = +x, ccw positive).
@@ -63,7 +63,7 @@ def plot(curr_pos, goal_pos, heading, show=True):
     plt.legend()
     if show:
         plt.show()
-
+'''
 
 if __name__=="__main__":
     curr_pos = (-5, 5)

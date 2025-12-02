@@ -1,6 +1,7 @@
 import cv2
 import cv2.aruco as aruco
 import numpy as np
+import math
 
 # TODO: add the calibration as a function in this class
 class ArucoMarkers():
@@ -141,7 +142,7 @@ class ArucoMarkers():
                 robots[i].x = x
                 robots[i].y = y
                 robots[i].heading = yaw
-            '''
+            
 
         
         # Debug
@@ -192,6 +193,56 @@ class ArucoMarkers():
         # cv2.imshow("ArUco Detection", frame)
         # if cv2.waitKey(1) & 0xFF == ord('q'):
         #     return
+'''
+    def detect_markers(self, marker_id_to_robots, frame):
+        # Clear detection flags each frame
+        for robot in marker_id_to_robots.values():
+            robot.detected = False
+
+        corners, ids, rejected = self.detector.detectMarkers(frame)
+
+        if ids is not None:
+            aruco.drawDetectedMarkers(frame, corners, ids)
+
+            for i, marker_id in enumerate(ids.flatten()):
+                if marker_id not in marker_id_to_robots:
+                    continue
+
+                robot = marker_id_to_robots[marker_id]
+                robot.detected = True 
+
+                c = corners[i][0]
+                center_x = int(c[:, 0].mean())
+                center_y = int(c[:, 1].mean())
+
+                dx = c[0][0] - c[3][0]
+                dy = c[0][1] - c[3][1]
+
+                c = corners[i][0]  # 4 corners: top-left, top-right, bottom-right, bottom-left
+
+                # Length of top side (top-left to top-right)
+                top_length = np.linalg.norm(c[1] - c[0])
+
+                # Length of right side (top-right to bottom-right)
+                right_length = np.linalg.norm(c[2] - c[1])
+
+                # Length of bottom side (bottom-right to bottom-left)
+                bottom_length = np.linalg.norm(c[3] - c[2])
+
+                # Length of left side (bottom-left to top-left)
+                left_length = np.linalg.norm(c[0] - c[3])
+
+                # Average side length
+                avg_length = (top_length + right_length + bottom_length + left_length) / 4
+
+                robot.stop_mag = avg_length * 2
+
+                robot.heading = np.degrees(np.arctan2(dy, dx))
+                #print(robot.heading)
+
+                robot.x = center_x
+                robot.y = center_y
+                robot.stop_mag
 
 
 
