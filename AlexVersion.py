@@ -47,7 +47,7 @@ def compute_pwm(
         heading_err,
         max_heading_pwm: int = 200,
         min_heading_pwm: int = 10,
-        h_scale: float = 1.0,
+        h_scale: float = 0.2,
         min_distance: float = 150, #Figure out how many pixels we want
         forward_pwm: int = 30
 ):
@@ -72,10 +72,10 @@ def compute_pwm(
     heading_pwm = heading_err * h_scale
     heading_pwm = max(-max_heading_pwm, min(heading_pwm, max_heading_pwm))
 
-    if abs(heading_pwm) < min_heading_pwm:
-        heading_pwm = 0
+    # if abs(heading_pwm) < min_heading_pwm:
+    #     heading_pwm = 0
 
-    if heading_pwm > 0:
+    if heading_pwm < 0:
         robot.l_pwm += int(-heading_pwm)  # negative reduces left motor
     else:
         robot.r_pwm += int(heading_pwm)
@@ -96,7 +96,7 @@ def main():
     # Initialize ArUco detector
     marker_detector = ArucoMarkers()
     
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(2)
     if not cap.isOpened():
         print("Cannot open camera")
         return
@@ -148,7 +148,7 @@ def main():
             print("Id: ",robot.id)
 
             print("Left/Right PWM: ",robot.l_pwm, robot.r_pwm)
-            transmission.send_pwm(int(robot.id),robot.l_pwm,robot.r_pwm)
+            transmission.send_pwm(int(robot.id),robot.r_pwm,robot.l_pwm)
             #print("PWM:", left_pwm, right_pwm)
             #print(angle_btwn_vectors)
             #print(robot.heading)
