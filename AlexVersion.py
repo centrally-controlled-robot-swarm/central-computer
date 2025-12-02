@@ -75,7 +75,7 @@ def compute_pwm(
     if abs(heading_pwm) < min_heading_pwm:
         heading_pwm = 0
 
-    if heading_pwm < 0:
+    if heading_pwm > 0:
         robot.l_pwm += int(-heading_pwm)  # negative reduces left motor
     else:
         robot.r_pwm += int(heading_pwm)
@@ -148,7 +148,7 @@ def main():
             print("Id: ",robot.id)
 
             print("Left/Right PWM: ",robot.l_pwm, robot.r_pwm)
-            transmission.send_pwm(robot.id,robot.l_pwm,robot.r_pwm)
+            transmission.send_pwm(int(robot.id),robot.l_pwm,robot.r_pwm)
             #print("PWM:", left_pwm, right_pwm)
             #print(angle_btwn_vectors)
             #print(robot.heading)

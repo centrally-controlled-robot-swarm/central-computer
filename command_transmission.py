@@ -10,8 +10,8 @@ class CommandTransmission():
         # Storing the IP addresses in a dict so that addressing is in constant time
         self.esp_id = {
             1: "10.42.0.50",
-            2: "10.42.0.40",
-            3: "10.42.0.30"
+            2: "10.42.0.30",
+            3: "10.42.0.40"
         }
         self.ESP32_PORT = 4210
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -51,11 +51,13 @@ if __name__=="__main__":
 
     
     
-    # while True:
-        # pwm_L, pwm_R = input("Enter L and R PWM, separated by a space: ").split()
-        # data_obj.send_pwm(3, int(pwm_L), int(pwm_R))
-        # time.sleep(0.05)
-
+    while True:
+        pwm_L, pwm_R = input("Enter L and R PWM, separated by a space: ").split()
+        data_obj.send_pwm(3, int(pwm_L), int(pwm_R))
+        data_obj.send_pwm(2, int(pwm_L), int(pwm_R))
+        data_obj.send_pwm(1, int(pwm_L), int(pwm_R))
+        time.sleep(0.05)
+'''
     data_obj.send_pwm(1, int(20), int(40))
     data_obj.send_pwm(2, int(20), int(40))
     data_obj.send_pwm(3, int(20), int(40))
@@ -63,4 +65,4 @@ if __name__=="__main__":
     data_obj.send_pwm(1, int(0), int(0))
     data_obj.send_pwm(2, int(0), int(0))
     data_obj.send_pwm(3, int(0), int(0))
-
+'''
